@@ -13,7 +13,6 @@
       width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
       font-family: 'DM Sans', sans-serif;
     }
-
     #tokenPanel {
       position: absolute; top: 20px; left: 20px; z-index: 1001;
       background: rgba(13, 17, 23, 0.95);
@@ -27,20 +26,15 @@
       border-radius: 6px; border: 1px solid #333; background: #0D1117; color: #E6EDF3;
     }
     #tokenPanel small { color: rgba(255,255,255,0.5); display: block; margin-top: 6px; }
-
     #infoPanel {
       position: absolute; top: 20px; right: 20px;
       background: rgba(13, 17, 23, 0.95);
       border: 1px solid rgba(57, 255, 20, 0.3);
       border-radius: 12px; padding: 1rem;
       color: #E6EDF3; max-width: 280px;
-      font-size: 13px; z-index: 1000;
-      display: none;
+      font-size: 13px; z-index: 1000; display: none;
     }
-    #infoPanel h3 {
-      color: #39FF14; margin: 0 0 0.5rem 0;
-      font-size: 1rem; font-family: 'Playfair Display', serif;
-    }
+    #infoPanel h3 { color: #39FF14; margin: 0 0 0.5rem 0; font-size: 1rem; }
     button {
       background: #39FF14; color: #0D1117; border: none;
       padding: 0.5rem 1rem; border-radius: 8px;
@@ -48,7 +42,6 @@
       margin-top: 0.5rem; font-size: 12px;
     }
     button:hover { filter: brightness(1.1); }
-
     #detallePanel {
       position: absolute; bottom: 20px; left: 50%;
       transform: translateX(-50%);
@@ -66,14 +59,14 @@
     }
     #detallePanel h3 {
       color: #39FF14; margin: 0 0 0.4rem 0;
-      font-size: 1.1rem; font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
     }
     #detallePanel .cerrar {
       position: absolute; top: 8px; right: 8px;
       background: rgba(255,255,255,0.1); color: #fff;
-      border: none; height: 30px;
+      border: none; height: 30px; width: auto;
       border-radius: 8px; cursor: pointer; font-size: 14px;
-      width: auto; padding: 0 8px; margin: 0;
+      padding: 0 8px; margin: 0;
     }
     #detallePanel .btn-llegar {
       display: block; width: 100%;
@@ -85,7 +78,6 @@
       text-align: center;
     }
     #detallePanel .btn-llegar:hover { background: #3367d6; }
-
     #zoomControls {
       position: absolute; bottom: 30px; right: 20px;
       z-index: 1000; display: flex; flex-direction: column; gap: 6px;
@@ -95,14 +87,13 @@
       color: #39FF14; border: 2px solid rgba(57, 255, 20, 0.4);
       width: 46px; height: 46px; border-radius: 50%;
       font-size: 22px; font-weight: 900;
-      cursor: pointer; margin: 0;
+      cursor: pointer; margin: 0; padding: 0;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-      transition: 0.15s; padding: 0;
+      transition: 0.15s;
     }
     #zoomControls button:hover { background: rgba(57, 255, 20, 0.15); transform: scale(1.08); }
     #zoomControls button:active { transform: scale(0.95); }
-
     #rotateControls {
       position: absolute; bottom: 30px; right: 80px;
       z-index: 1000; display: flex; flex-direction: column; gap: 6px;
@@ -112,10 +103,10 @@
       color: #39FF14; border: 2px solid rgba(57, 255, 20, 0.4);
       width: 46px; height: 46px; border-radius: 50%;
       font-size: 18px; font-weight: 900;
-      cursor: pointer; margin: 0;
+      cursor: pointer; margin: 0; padding: 0;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-      transition: 0.15s; padding: 0;
+      transition: 0.15s;
     }
     #rotateControls button:hover { background: rgba(57, 255, 20, 0.15); transform: scale(1.08); }
     #rotateControls button:active { transform: scale(0.95); }
@@ -130,13 +121,13 @@
   <label for="tokenInput">Pega tu access token:</label>
   <input id="tokenInput" type="text" placeholder="eyJhbGci...">
   <button onclick="iniciarVisor()">Cargar mapa de Roboré</button>
-  <small>Consíguelo gratis en ion.cesium.com/tokens — nunca lo compartas ni lo subas a un repo público.</small>
+  <small>Consíguelo gratis en ion.cesium.com/tokens</small>
 </div>
 
 <div id="infoPanel">
   <h3>🗺 Roboré 3D</h3>
   <p style="margin: 0 0 0.5rem 0; color: rgba(255,255,255,0.7); font-size: 12px;">
-    🟢 Turismo · 🟡 Chochís · 🔵 Aguas Cal. · 🔴 Hoteles · 🟣 Restaurantes
+    🟢 Turismo · 🔴 Hoteles · 🟣 Restaurantes
   </p>
   <p style="margin: 0 0 0.5rem 0; color: rgba(255,255,255,0.5); font-size: 11px;">
     🖱️ Arrastra para girar · Rueda para zoom
@@ -166,6 +157,7 @@
 <script>
   const ROBORE = { lon: -59.7583, lat: -18.3328 };
 
+  // ==================== ATRACTIVOS TURÍSTICOS (11) ====================
   const atractivos = [
     { nombre: 'Balneario Municipal El Chorro', lon: -59.7583, lat: -18.3328, tipo: 'turismo',
       precioLocal: 10, precioExtranjero: 20, horario: '08:00-18:00', rating: 4.5,
@@ -224,6 +216,7 @@
       servicios: 'Baños, vestidores, piscinas', recomendacion: 'Llevar traje de baño y toalla' }
   ];
 
+  // ==================== HOTELES (13) ====================
   const hoteles = [
     { nombre: 'Hotel Las Lajas', lon: -59.7580, lat: -18.3330, tipo: 'hotel', precio: 200, rating: 4.3, servicios: 'Piscina, restaurante, estacionamiento' },
     { nombre: 'Hotel Descanso Chiquitano', lon: -59.7570, lat: -18.3340, tipo: 'hotel', precio: 150, rating: 4.0, servicios: 'Jardín, comedor' },
@@ -240,6 +233,7 @@
     { nombre: 'Hotel Pacheco', lon: -59.7580, lat: -18.3345, tipo: 'hotel', precio: 160, rating: 3.9, servicios: 'Aire acondicionado, TV' }
   ];
 
+  // ==================== RESTAURANTES (16) ====================
   const restaurantes = [
     { nombre: 'Restaurant El Molino', lon: -59.7570, lat: -18.3330, tipo: 'restaurante', precio: 60, especialidad: 'Carnes a la parrilla', horario: '07:00-22:00', rating: 4.3 },
     { nombre: 'Café París', lon: -59.7580, lat: -18.3320, tipo: 'restaurante', precio: 45, especialidad: 'Café de especialidad y repostería', horario: '07:30-21:00', rating: 4.2 },
@@ -267,15 +261,15 @@
     restaurante: '#A855F7'
   };
 
-  // ===== MAPA DE IMÁGENES COMPLETO (40 imágenes en GitHub) =====
+  // ==================== MAPA DE IMÁGENES (NOMBRES EXACTOS DE TU REPO) ====================
   const mapaImagenes = {
-    // ===== LUGARES TURÍSTICOS =====
+    // ===== ATRACTIVOS (carpeta: lugarturistico) =====
     'Balneario Municipal El Chorro': 'lugarturistico/balneariomunicipal.jpeg',
     'Las Pampas': 'lugarturistico/laspampas.jpg',
     'Las Pozas': 'lugarturistico/laspozas.jpeg',
     'Cuevas de Miserendino': 'lugarturistico/cuevasdemiserendino.jpeg',
     'El Chorro de San Luis': 'lugarturistico/chorrosanluis.png',
-    'Los Totaizales': 'lugarturistico/totaizales.jpg',
+    'Los Totaizales': 'lugarturistico/totalizales.jpg',
     'Santuario Mariano de la Torre': 'lugarturistico/santuariomariano.jpeg',
     'Cascada de los Helechos': 'lugarturistico/cascadahelechos.jpg',
     'Cascada Velo de Novia': 'lugarturistico/cascadavelodenovia.jpeg',
@@ -283,7 +277,7 @@
     'Centro Turístico Los Hervores': 'lugarturistico/loshervores.jpg',
 
     // ===== HOTELES =====
-    'Hotel Las Lajas': 'hoteles/hotellajas.jpg',
+    'Hotel Las Lajas': 'hoteles/hotellaslajas.jpg',
     'Hotel Descanso Chiquitano': 'hoteles/hoteldescansochiquitano.jpg',
     'Hotel Mami Vilma': 'hoteles/hotelmamivilma.jpg',
     'La Casona de Don Pepe': 'hoteles/lacasonadedonpepe.jpg',
@@ -318,36 +312,49 @@
 
   function obtenerImagenLugar(nombre) {
     const baseUrl = 'https://raw.githubusercontent.com/santacruzrojobore-sys/santarojobore/main/imagenes/';
-    const ruta = mapaImagenes[nombre] || 'lugarturistico/balneariomunicipal.jpeg';
+    const ruta = mapaImagenes[nombre];
+    if (!ruta) return null;
     if (ruta.startsWith('http')) return ruta;
     return baseUrl + ruta;
   }
 
-  // ===== Generador de pin con efecto glow =====
+  // ===== PIN GOTA FUTURISTA CON GLOW Y CIRCUITO INTERIOR =====
   function crearPinGlowSVG(colorHex) {
     const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="90" height="110" viewBox="0 0 90 110">
+      <svg xmlns="http://www.w3.org/2000/svg" width="90" height="120" viewBox="0 0 90 120">
         <defs>
-          <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur stdDeviation="5" result="blur"/>
+          <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="6" result="blur"/>
             <feMerge>
+              <feMergeNode in="blur"/>
               <feMergeNode in="blur"/>
               <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
           <radialGradient id="ring" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="${colorHex}" stop-opacity="0.55"/>
+            <stop offset="0%" stop-color="${colorHex}" stop-opacity="0.6"/>
+            <stop offset="60%" stop-color="${colorHex}" stop-opacity="0.15"/>
             <stop offset="100%" stop-color="${colorHex}" stop-opacity="0"/>
           </radialGradient>
+          <linearGradient id="gota" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="${colorHex}" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#0D1117" stop-opacity="1"/>
+          </linearGradient>
         </defs>
-        <circle cx="45" cy="88" r="26" fill="url(#ring)"/>
-        <ellipse cx="45" cy="90" rx="10" ry="3" fill="rgba(0,0,0,0.35)"/>
+        <circle cx="45" cy="92" r="30" fill="url(#ring)"/>
+        <ellipse cx="45" cy="96" rx="12" ry="3.5" fill="rgba(0,0,0,0.45)"/>
         <g filter="url(#glow)">
-          <path d="M45 8 C24 8 10 24 10 43 C10 66 45 96 45 96 C45 96 80 66 80 43 C80 24 66 8 45 8 Z"
-                fill="${colorHex}" stroke="white" stroke-width="2.5"/>
-          <circle cx="45" cy="42" r="15" fill="#0D1117"/>
-          <circle cx="45" cy="42" r="9" fill="${colorHex}"/>
+          <path d="M45 8 C26 8 12 24 12 44 C12 68 45 100 45 100 C45 100 78 68 78 44 C78 24 64 8 45 8 Z"
+                fill="url(#gota)" stroke="${colorHex}" stroke-width="2.5"/>
+          <line x1="45" y1="20" x2="45" y2="34" stroke="${colorHex}" stroke-width="1.5" opacity="0.9"/>
+          <line x1="34" y1="44" x2="56" y2="44" stroke="${colorHex}" stroke-width="1.5" opacity="0.9"/>
+          <line x1="38" y1="56" x2="52" y2="56" stroke="${colorHex}" stroke-width="1.2" opacity="0.7"/>
+          <line x1="42" y1="68" x2="48" y2="68" stroke="${colorHex}" stroke-width="1" opacity="0.5"/>
+          <circle cx="45" cy="44" r="9" fill="#0D1117" stroke="${colorHex}" stroke-width="2"/>
+          <circle cx="45" cy="44" r="4" fill="${colorHex}"/>
         </g>
+        <circle cx="22" cy="44" r="2.5" fill="${colorHex}" opacity="0.8"/>
+        <circle cx="68" cy="44" r="2.5" fill="${colorHex}" opacity="0.8"/>
       </svg>`;
     return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
   }
@@ -358,27 +365,69 @@
     return cachePines[colorHex];
   }
 
-  // ===== Halo glow detrás de la foto =====
-  function crearGlowFotoSVG(colorHex) {
-    const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="100" height="80" viewBox="0 0 100 80">
-        <defs>
-          <filter id="g" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="7"/>
-          </filter>
-        </defs>
-        <rect x="14" y="12" width="72" height="56" rx="10"
-              fill="none" stroke="${colorHex}" stroke-width="5"
-              opacity="0.95" filter="url(#g)"/>
-        <rect x="14" y="12" width="72" height="56" rx="10"
-              fill="none" stroke="${colorHex}" stroke-width="2" opacity="0.9"/>
-      </svg>`;
-    return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
-  }
-  const cacheGlowFoto = {};
-  function glowFotoPara(colorHex) {
-    if (!cacheGlowFoto[colorHex]) cacheGlowFoto[colorHex] = crearGlowFotoSVG(colorHex);
-    return cacheGlowFoto[colorHex];
+  // ===== FOTO RECORTADA EN FORMA DE GOTA + GLOW =====
+  const CANVAS_W = 90, CANVAS_H = 120;
+  const PIN_PATH_D = 'M45 8 C26 8 12 24 12 44 C12 68 45 100 45 100 C45 100 78 68 78 44 C78 24 64 8 45 8 Z';
+
+  function construirPinPath() { return new Path2D(PIN_PATH_D); }
+
+  const cacheFotoPin = {};
+  function fotoPinPromise(imageUrl, colorHex) {
+    const cacheKey = imageUrl + '|' + colorHex;
+    if (cacheFotoPin[cacheKey]) return cacheFotoPin[cacheKey];
+
+    const promesa = new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = CANVAS_W; canvas.height = CANVAS_H;
+          const ctx = canvas.getContext('2d');
+          const pin = construirPinPath();
+
+          ctx.save();
+          ctx.shadowColor = colorHex;
+          ctx.shadowBlur = 18;
+          ctx.fillStyle = colorHex;
+          ctx.fill(pin);
+          ctx.restore();
+
+          ctx.save();
+          ctx.clip(pin);
+          const scale = Math.max(CANVAS_W / img.width, CANVAS_H / img.height);
+          const dw = img.width * scale, dh = img.height * scale;
+          ctx.drawImage(img, (CANVAS_W - dw) / 2, (CANVAS_H - dh) / 2 - 6, dw, dh);
+          const grad = ctx.createLinearGradient(0, CANVAS_H * 0.55, 0, CANVAS_H);
+          grad.addColorStop(0, 'rgba(0,0,0,0)');
+          grad.addColorStop(1, 'rgba(0,0,0,0.35)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+          ctx.restore();
+
+          ctx.lineWidth = 3; ctx.strokeStyle = colorHex; ctx.stroke(pin);
+          ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.stroke(pin);
+
+          ctx.beginPath();
+          ctx.ellipse(45, 104, 12, 3.2, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0,0,0,0.4)';
+          ctx.fill();
+
+          resolve(canvas);
+        } catch (e) {
+          console.warn('CORS fallback:', imageUrl);
+          resolve(pinPara(colorHex));
+        }
+      };
+      img.onerror = () => {
+        console.warn('Imagen no encontrada:', imageUrl);
+        resolve(pinPara(colorHex));
+      };
+      img.src = imageUrl;
+    });
+
+    cacheFotoPin[cacheKey] = promesa;
+    return promesa;
   }
 
   let viewer;
@@ -400,7 +449,7 @@
     try {
       const bingLayer = await Cesium.IonImageryProvider.fromAssetId(2);
       viewer.imageryLayers.addImageryProvider(bingLayer);
-    } catch (e) { console.warn('No se pudo cargar Bing Aerial.', e); }
+    } catch (e) { console.warn('Bing Aerial no cargó.', e); }
 
     const controller = viewer.scene.screenSpaceCameraController;
     controller.enableRotate = true;
@@ -413,17 +462,20 @@
 
     function agregarPunto(lugar, colorHex, prefijo) {
       const imagenUrl = obtenerImagenLugar(lugar.nombre);
+      const imagenFinal = imagenUrl
+        ? fotoPinPromise(imagenUrl, colorHex)
+        : pinPara(colorHex);
+
       viewer.entities.add({
         name: prefijo + lugar.nombre,
         position: Cesium.Cartesian3.fromDegrees(lugar.lon, lugar.lat, 100),
         billboard: {
-          image: pinPara(colorHex),
-          width: 46,
-          height: 56,
+          image: imagenFinal,
+          width: 52, height: 70,
           verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
           heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
           disableDepthTestDistance: Number.POSITIVE_INFINITY,
-          scaleByDistance: new Cesium.NearFarScalar(300, 1.1, 20000, 0.55)
+          scaleByDistance: new Cesium.NearFarScalar(300, 1.15, 20000, 0.5)
         },
         label: {
           text: lugar.nombre,
@@ -432,42 +484,10 @@
           outlineColor: Cesium.Color.BLACK,
           outlineWidth: 2,
           style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          pixelOffset: new Cesium.Cartesian2(0, -62),
+          pixelOffset: new Cesium.Cartesian2(0, -78),
           heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
           distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 15000),
           scaleByDistance: new Cesium.NearFarScalar(500, 1.0, 15000, 0.7)
-        }
-      });
-
-      viewer.entities.add({
-        name: prefijo + lugar.nombre,
-        position: Cesium.Cartesian3.fromDegrees(lugar.lon, lugar.lat, 100),
-        billboard: {
-          image: glowFotoPara(colorHex),
-          width: 78,
-          height: 62,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          pixelOffset: new Cesium.Cartesian2(0, -66),
-          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-          distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2500),
-          disableDepthTestDistance: Number.POSITIVE_INFINITY,
-          eyeOffset: new Cesium.Cartesian3(0, 0, 2.0)
-        }
-      });
-
-      viewer.entities.add({
-        name: prefijo + lugar.nombre,
-        position: Cesium.Cartesian3.fromDegrees(lugar.lon, lugar.lat, 100),
-        billboard: {
-          image: imagenUrl,
-          width: 60,
-          height: 42,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          pixelOffset: new Cesium.Cartesian2(0, -66),
-          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-          distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2500),
-          disableDepthTestDistance: Number.POSITIVE_INFINITY,
-          eyeOffset: new Cesium.Cartesian3(0, 0, 0)
         }
       });
     }
@@ -476,17 +496,37 @@
     hoteles.forEach(l => agregarPunto(l, colores.hotel, '🏨 '));
     restaurantes.forEach(l => agregarPunto(l, colores.restaurante, '🍽️ '));
 
+    // ===== LÍNEAS ROJAS FUTURISTAS QUE CONECTAN CADA CATEGORÍA =====
+    function dibujarLineasCategoria(lista, colorLinea) {
+      for (let i = 0; i < lista.length - 1; i++) {
+        const p1 = lista[i], p2 = lista[i + 1];
+        viewer.entities.add({
+          polyline: {
+            positions: Cesium.Cartesian3.fromDegreesArray([p1.lon, p1.lat, p2.lon, p2.lat]),
+            width: 2,
+            material: new Cesium.PolylineGlowMaterialProperty({
+              glowPower: 0.35,
+              color: Cesium.Color.fromCssColorString(colorLinea)
+            }),
+            clampToGround: true
+          }
+        });
+      }
+    }
+
+    const ROJO_FUTURISTA = '#FF003C';
+    dibujarLineasCategoria(atractivos, ROJO_FUTURISTA);
+    dibujarLineasCategoria(hoteles, ROJO_FUTURISTA);
+    dibujarLineasCategoria(restaurantes, ROJO_FUTURISTA);
+
     viewer.screenSpaceEventHandler.setInputAction(function (movement) {
       const picked = viewer.scene.pick(movement.position);
       if (Cesium.defined(picked) && picked.id && picked.id.name) {
-        const nombreConPrefijo = picked.id.name;
-        const nombre = nombreConPrefijo.replace('📍 ', '').replace('🏨 ', '').replace('🍽️ ', '');
-
+        const nombre = picked.id.name.replace('📍 ', '').replace('🏨 ', '').replace('🍽️ ', '');
         let lugarData = atractivos.find(a => a.nombre === nombre);
         let categoria = 'turismo';
         if (!lugarData) { lugarData = hoteles.find(h => h.nombre === nombre); categoria = 'hotel'; }
         if (!lugarData) { lugarData = restaurantes.find(r => r.nombre === nombre); categoria = 'restaurante'; }
-
         if (lugarData) mostrarDetalle(lugarData, categoria);
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
@@ -498,7 +538,9 @@
 
   function mostrarDetalle(lugar, categoria) {
     const panel = document.getElementById('detallePanel');
-    document.getElementById('detalleImg').src = obtenerImagenLugar(lugar.nombre);
+    const imgUrl = obtenerImagenLugar(lugar.nombre);
+    document.getElementById('detalleImg').src = imgUrl || '';
+    document.getElementById('detalleImg').style.display = imgUrl ? 'block' : 'none';
     document.getElementById('detalleNombre').textContent = lugar.nombre;
 
     let descripcion = '';
@@ -522,8 +564,7 @@
     }
 
     document.getElementById('detalleDesc').textContent = descripcion;
-    const btnLlegar = document.getElementById('btnComoLlegar');
-    btnLlegar.href = 'https://www.google.com/maps/dir/?api=1&destination=' + lugar.lat + ',' + lugar.lon;
+    document.getElementById('btnComoLlegar').href = 'https://www.google.com/maps/dir/?api=1&destination=' + lugar.lat + ',' + lugar.lon;
     panel.style.display = 'block';
   }
 
@@ -533,15 +574,13 @@
 
   window.zoomIn = function() {
     if (!viewer) return;
-    const alturaActual = viewer.camera.positionCartographic.height;
-    const nuevaAltura = Math.max(alturaActual / 1.5, 100);
-    viewer.camera.zoomIn(alturaActual - nuevaAltura);
+    const h = viewer.camera.positionCartographic.height;
+    viewer.camera.zoomIn(h - Math.max(h / 1.5, 100));
   };
   window.zoomOut = function() {
     if (!viewer) return;
-    const alturaActual = viewer.camera.positionCartographic.height;
-    const nuevaAltura = Math.min(alturaActual * 1.5, 50000);
-    viewer.camera.zoomOut(nuevaAltura - alturaActual);
+    const h = viewer.camera.positionCartographic.height;
+    viewer.camera.zoomOut(Math.min(h * 1.5, 50000) - h);
   };
   window.rotateLeft = function() {
     if (!viewer) return;
