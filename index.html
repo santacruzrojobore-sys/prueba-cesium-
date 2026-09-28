@@ -157,7 +157,6 @@
 <script>
   const ROBORE = { lon: -59.7583, lat: -18.3328 };
 
-  // ==================== ATRACTIVOS TURÍSTICOS (11) ====================
   const atractivos = [
     { nombre: 'Balneario Municipal El Chorro', lon: -59.7583, lat: -18.3328, tipo: 'turismo',
       precioLocal: 10, precioExtranjero: 20, horario: '08:00-18:00', rating: 4.5,
@@ -216,7 +215,6 @@
       servicios: 'Baños, vestidores, piscinas', recomendacion: 'Llevar traje de baño y toalla' }
   ];
 
-  // ==================== HOTELES (13) ====================
   const hoteles = [
     { nombre: 'Hotel Las Lajas', lon: -59.7580, lat: -18.3330, tipo: 'hotel', precio: 200, rating: 4.3, servicios: 'Piscina, restaurante, estacionamiento' },
     { nombre: 'Hotel Descanso Chiquitano', lon: -59.7570, lat: -18.3340, tipo: 'hotel', precio: 150, rating: 4.0, servicios: 'Jardín, comedor' },
@@ -233,7 +231,6 @@
     { nombre: 'Hotel Pacheco', lon: -59.7580, lat: -18.3345, tipo: 'hotel', precio: 160, rating: 3.9, servicios: 'Aire acondicionado, TV' }
   ];
 
-  // ==================== RESTAURANTES (16) ====================
   const restaurantes = [
     { nombre: 'Restaurant El Molino', lon: -59.7570, lat: -18.3330, tipo: 'restaurante', precio: 60, especialidad: 'Carnes a la parrilla', horario: '07:00-22:00', rating: 4.3 },
     { nombre: 'Café París', lon: -59.7580, lat: -18.3320, tipo: 'restaurante', precio: 45, especialidad: 'Café de especialidad y repostería', horario: '07:30-21:00', rating: 4.2 },
@@ -261,9 +258,7 @@
     restaurante: '#A855F7'
   };
 
-  // ==================== MAPA DE IMÁGENES (NOMBRES EXACTOS DE TU REPO) ====================
   const mapaImagenes = {
-    // ===== ATRACTIVOS (carpeta: lugarturistico) =====
     'Balneario Municipal El Chorro': 'lugarturistico/balneariomunicipal.jpeg',
     'Las Pampas': 'lugarturistico/laspampas.jpg',
     'Las Pozas': 'lugarturistico/laspozas.jpeg',
@@ -275,8 +270,6 @@
     'Cascada Velo de Novia': 'lugarturistico/cascadavelodenovia.jpeg',
     'Cascada de Yororoba': 'lugarturistico/cascadadeyororoba.jpeg',
     'Centro Turístico Los Hervores': 'lugarturistico/loshervores.jpg',
-
-    // ===== HOTELES =====
     'Hotel Las Lajas': 'hoteles/hotellaslajas.jpg',
     'Hotel Descanso Chiquitano': 'hoteles/hoteldescansochiquitano.jpg',
     'Hotel Mami Vilma': 'hoteles/hotelmamivilma.jpg',
@@ -290,8 +283,6 @@
     'Chochís Cabañas': 'hoteles/caba%C3%B1aschochis.jpeg',
     'Hotel Peregrino': 'hoteles/hotelperegrino.jpg',
     'Hotel Pacheco': 'hoteles/hotelpacheco.jpg',
-
-    // ===== RESTAURANTES =====
     'Restaurant El Molino': 'restaurantes/restaurantemolino.jpg',
     'Café París': 'restaurantes/cafeparis.png',
     'Deleite Café Roboré': 'restaurantes/deleitecafe.png',
@@ -318,7 +309,6 @@
     return baseUrl + ruta;
   }
 
-  // ===== PIN GOTA FUTURISTA CON GLOW Y CIRCUITO INTERIOR =====
   function crearPinGlowSVG(colorHex) {
     const svg = `
       <svg xmlns="http://www.w3.org/2000/svg" width="90" height="120" viewBox="0 0 90 120">
@@ -365,11 +355,25 @@
     return cachePines[colorHex];
   }
 
-  // ===== FOTO RECORTADA EN FORMA DE GOTA + GLOW =====
   const CANVAS_W = 90, CANVAS_H = 120;
   const PIN_PATH_D = 'M45 8 C26 8 12 24 12 44 C12 68 45 100 45 100 C45 100 78 68 78 44 C78 24 64 8 45 8 Z';
 
   function construirPinPath() { return new Path2D(PIN_PATH_D); }
+
+  // ===== COLA DE CARGA (máximo 3 imágenes a la vez) =====
+  const colaCarga = [];
+  let cargandoAhora = 0;
+  const MAX_CONCURRENTES = 3;
+
+  function procesarCola() {
+    if (cargandoAhora >= MAX_CONCURRENTES || colaCarga.length === 0) return;
+    const tarea = colaCarga.shift();
+    cargandoAhora++;
+    tarea().finally(() => {
+      cargandoAhora--;
+      procesarCola();
+    });
+  }
 
   const cacheFotoPin = {};
   function fotoPinPromise(imageUrl, colorHex) {
@@ -377,53 +381,58 @@
     if (cacheFotoPin[cacheKey]) return cacheFotoPin[cacheKey];
 
     const promesa = new Promise((resolve) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          canvas.width = CANVAS_W; canvas.height = CANVAS_H;
-          const ctx = canvas.getContext('2d');
-          const pin = construirPinPath();
+      const ejecutar = () => new Promise((res) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = CANVAS_W; canvas.height = CANVAS_H;
+            const ctx = canvas.getContext('2d');
+            const pin = construirPinPath();
 
-          ctx.save();
-          ctx.shadowColor = colorHex;
-          ctx.shadowBlur = 18;
-          ctx.fillStyle = colorHex;
-          ctx.fill(pin);
-          ctx.restore();
+            ctx.save();
+            ctx.shadowColor = colorHex;
+            ctx.shadowBlur = 18;
+            ctx.fillStyle = colorHex;
+            ctx.fill(pin);
+            ctx.restore();
 
-          ctx.save();
-          ctx.clip(pin);
-          const scale = Math.max(CANVAS_W / img.width, CANVAS_H / img.height);
-          const dw = img.width * scale, dh = img.height * scale;
-          ctx.drawImage(img, (CANVAS_W - dw) / 2, (CANVAS_H - dh) / 2 - 6, dw, dh);
-          const grad = ctx.createLinearGradient(0, CANVAS_H * 0.55, 0, CANVAS_H);
-          grad.addColorStop(0, 'rgba(0,0,0,0)');
-          grad.addColorStop(1, 'rgba(0,0,0,0.35)');
-          ctx.fillStyle = grad;
-          ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-          ctx.restore();
+            ctx.save();
+            ctx.clip(pin);
+            const scale = Math.max(CANVAS_W / img.width, CANVAS_H / img.height);
+            const dw = img.width * scale, dh = img.height * scale;
+            ctx.drawImage(img, (CANVAS_W - dw) / 2, (CANVAS_H - dh) / 2 - 6, dw, dh);
+            const grad = ctx.createLinearGradient(0, CANVAS_H * 0.55, 0, CANVAS_H);
+            grad.addColorStop(0, 'rgba(0,0,0,0)');
+            grad.addColorStop(1, 'rgba(0,0,0,0.35)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+            ctx.restore();
 
-          ctx.lineWidth = 3; ctx.strokeStyle = colorHex; ctx.stroke(pin);
-          ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.stroke(pin);
+            ctx.lineWidth = 3; ctx.strokeStyle = colorHex; ctx.stroke(pin);
+            ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.stroke(pin);
 
-          ctx.beginPath();
-          ctx.ellipse(45, 104, 12, 3.2, 0, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(0,0,0,0.4)';
-          ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(45, 104, 12, 3.2, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.fill();
 
-          resolve(canvas);
-        } catch (e) {
-          console.warn('CORS fallback:', imageUrl);
+            resolve(canvas);
+          } catch (e) {
+            resolve(pinPara(colorHex));
+          }
+          res();
+        };
+        img.onerror = () => {
           resolve(pinPara(colorHex));
-        }
-      };
-      img.onerror = () => {
-        console.warn('Imagen no encontrada:', imageUrl);
-        resolve(pinPara(colorHex));
-      };
-      img.src = imageUrl;
+          res();
+        };
+        img.src = imageUrl;
+      });
+
+      colaCarga.push(ejecutar);
+      procesarCola();
     });
 
     cacheFotoPin[cacheKey] = promesa;
@@ -496,7 +505,6 @@
     hoteles.forEach(l => agregarPunto(l, colores.hotel, '🏨 '));
     restaurantes.forEach(l => agregarPunto(l, colores.restaurante, '🍽️ '));
 
-    // ===== LÍNEAS ROJAS FUTURISTAS QUE CONECTAN CADA CATEGORÍA =====
     function dibujarLineasCategoria(lista, colorLinea) {
       for (let i = 0; i < lista.length - 1; i++) {
         const p1 = lista[i], p2 = lista[i + 1];
@@ -539,8 +547,9 @@
   function mostrarDetalle(lugar, categoria) {
     const panel = document.getElementById('detallePanel');
     const imgUrl = obtenerImagenLugar(lugar.nombre);
-    document.getElementById('detalleImg').src = imgUrl || '';
-    document.getElementById('detalleImg').style.display = imgUrl ? 'block' : 'none';
+    const img = document.getElementById('detalleImg');
+    if (imgUrl) { img.src = imgUrl; img.style.display = 'block'; }
+    else { img.style.display = 'none'; img.src = ''; }
     document.getElementById('detalleNombre').textContent = lugar.nombre;
 
     let descripcion = '';
