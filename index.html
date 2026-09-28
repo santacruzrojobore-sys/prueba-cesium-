@@ -462,20 +462,26 @@
   }
 
   // ---- carga de fotos: prueba cada URL en orden (una imagen vacía/404 pasa a la siguiente) ----
-  function cargarPrimeraValida(urls) {
+  // Cada URL se intenta hasta 3 veces (GitHub a veces rechaza pedidos simultáneos); si sigue fallando, pasa a la siguiente.
+  function cargarUna(url, intento) {
     return new Promise(resolve => {
-      let i = 0;
-      const siguiente = () => {
-        if (i >= urls.length) return resolve(null);
-        const url = urls[i++];
-        const img = new Image();
-        if (!url.startsWith('data:')) img.crossOrigin = 'anonymous';
-        img.onload = () => (img.naturalWidth > 1 ? resolve({ img, url }) : siguiente());
-        img.onerror = siguiente;
-        img.src = url;
-      };
-      siguiente();
+      const img = new Image();
+      if (!url.startsWith('data:')) img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img.naturalWidth > 1 ? img : null);
+      img.onerror = () => resolve(null);
+      img.src = (url.startsWith('data:') || intento === 0) ? url : url + (url.includes('?') ? '&' : '?') + 'r=' + Date.now();
     });
+  }
+  async function cargarPrimeraValida(urls) {
+    for (const url of urls) {
+      const intentos = url.startsWith('data:') ? 1 : 3;
+      for (let n = 0; n < intentos; n++) {
+        const img = await cargarUna(url, n);
+        if (img) return { img, url };
+        if (n < intentos - 1) await new Promise(r => setTimeout(r, 700 * (n + 1)));
+      }
+    }
+    return null;
   }
 
   const colaCarga = []; let cargandoAhora = 0; const MAX_CONC = 4;
