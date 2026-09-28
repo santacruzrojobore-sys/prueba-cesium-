@@ -137,7 +137,7 @@
 
 <div id="detallePanel">
   <button class="cerrar" onclick="cerrarDetalle()">✕</button>
-  <img id="detalleImg" src="" alt="">
+  <img id="detalleImg" src="" alt="" onerror="this.style.display='none'">
   <h3 id="detalleNombre"></h3>
   <p id="detalleDesc" style="color: rgba(255,255,255,0.85); margin: 0; font-size: 12px; white-space: pre-line;"></p>
   <a id="btnComoLlegar" class="btn-llegar" href="#" target="_blank">🧭 Cómo llegar con Google Maps</a>
@@ -258,22 +258,26 @@
     restaurante: '#A855F7'
   };
 
+  // Repo principal (subcarpetas) y repo "rojobore-" (4 fotos en la raíz de imagenes/)
+  const BASE_IMAGENES = 'https://raw.githubusercontent.com/santacruzrojobore-sys/santarojobore/main/imagenes/';
+  const BASE_IMAGENES_2 = 'https://raw.githubusercontent.com/santacruzrojobore-sys/rojobore-/main/imagenes/';
+
   const mapaImagenes = {
     'Balneario Municipal El Chorro': 'lugarturistico/balneariomunicipal.jpeg',
     'Las Pampas': 'lugarturistico/laspampas.jpg',
     'Las Pozas': 'lugarturistico/laspozas.jpeg',
     'Cuevas de Miserendino': 'lugarturistico/cuevasdemiserendino.jpeg',
     'El Chorro de San Luis': 'lugarturistico/chorrosanluis.png',
-    'Los Totaizales': 'lugarturistico/totalizales.jpg',
+    'Los Totaizales': 'lugarturistico/totaizales.jpg',
     'Santuario Mariano de la Torre': 'lugarturistico/santuariomariano.jpeg',
     'Cascada de los Helechos': 'lugarturistico/cascadahelechos.jpg',
     'Cascada Velo de Novia': 'lugarturistico/cascadavelodenovia.jpeg',
     'Cascada de Yororoba': 'lugarturistico/cascadadeyororoba.jpeg',
     'Centro Turístico Los Hervores': 'lugarturistico/loshervores.jpg',
-    'Hotel Las Lajas': 'hoteles/hotellaslajas.jpg',
+    'Hotel Las Lajas': BASE_IMAGENES_2 + 'hotellaslajas.jpg',
     'Hotel Descanso Chiquitano': 'hoteles/hoteldescansochiquitano.jpg',
-    'Hotel Mami Vilma': 'hoteles/hotelmamivilma.jpg',
-    'La Casona de Don Pepe': 'hoteles/lacasonadedonpepe.jpg',
+    'Hotel Mami Vilma': BASE_IMAGENES_2 + 'hotelmamivilma.jpg',
+    'La Casona de Don Pepe': BASE_IMAGENES_2 + 'lacasonadedonpepe.jpg',
     'Hotel Safari Club Roboré': 'hoteles/hotelsafariclub.jpeg',
     'Hotel y Camping Santiago de Chiquitos': 'hoteles/campingsantiagodechiquitos.jpg',
     'Hotel Las Parabas': 'hoteles/hotellasaparabas.jpeg',
@@ -289,7 +293,7 @@
     'El Messón!': 'restaurantes/elmesson.png',
     'Restaurant Los Lomitos': 'restaurantes/loslomitos.jpg',
     'Hotel Restaurant Cruz Blanca': 'restaurantes/cruzblanca.jpg',
-    'El Sazón de Mimín': 'restaurantes/elsazondemimin.jpg',
+    'El Sazón de Mimín': BASE_IMAGENES_2 + 'elsazondemimin.jpg',
     'A LO GRILL': 'restaurantes/alogrill.jpg',
     'Pacumutos - El Pila': 'restaurantes/pacumutoelpila.png',
     'Saborcitos Abu Ta Ta': 'restaurantes/saborcitosabutata.png',
@@ -302,11 +306,10 @@
   };
 
   function obtenerImagenLugar(nombre) {
-    const baseUrl = 'https://raw.githubusercontent.com/santacruzrojobore-sys/santarojobore/main/imagenes/';
     const ruta = mapaImagenes[nombre];
     if (!ruta) return null;
     if (ruta.startsWith('http')) return ruta;
-    return baseUrl + ruta;
+    return BASE_IMAGENES + ruta;
   }
 
   function crearPinGlowSVG(colorHex) {
@@ -366,15 +369,19 @@
   const MAX_CONCURRENTES = 3;
 
   function procesarCola() {
-    if (cargandoAhora >= MAX_CONCURRENTES || colaCarga.length === 0) return;
-    const tarea = colaCarga.shift();
-    cargandoAhora++;
-    tarea().finally(() => {
-      cargandoAhora--;
-      procesarCola();
-    });
+    while (cargandoAhora < MAX_CONCURRENTES && colaCarga.length > 0) {
+      const tarea = colaCarga.shift();
+      cargandoAhora++;
+      tarea().finally(() => {
+        cargandoAhora--;
+        procesarCola();
+      });
+    }
   }
 
+  // Devuelve una Promesa que resuelve con un TEXTO (dataURL PNG).
+  // Cesium no acepta Promesas ni canvas en billboard.image sin errores,
+  // así que se usa dataURL y se asigna cuando la foto ya cargó.
   const cacheFotoPin = {};
   function fotoPinPromise(imageUrl, colorHex) {
     const cacheKey = imageUrl + '|' + colorHex;
@@ -413,18 +420,14 @@
             ctx.lineWidth = 3; ctx.strokeStyle = colorHex; ctx.stroke(pin);
             ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.stroke(pin);
 
-            ctx.beginPath();
-            ctx.ellipse(45, 104, 12, 3.2, 0, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,0,0,0.4)';
-            ctx.fill();
-
-            resolve(canvas);
+            resolve(canvas.toDataURL('image/png'));
           } catch (e) {
             resolve(pinPara(colorHex));
           }
           res();
         };
         img.onerror = () => {
+          console.warn('Imagen no encontrada:', imageUrl);
           resolve(pinPara(colorHex));
           res();
         };
@@ -471,15 +474,13 @@
 
     function agregarPunto(lugar, colorHex, prefijo) {
       const imagenUrl = obtenerImagenLugar(lugar.nombre);
-      const imagenFinal = imagenUrl
-        ? fotoPinPromise(imagenUrl, colorHex)
-        : pinPara(colorHex);
 
-      viewer.entities.add({
+      // 1) Se crea el punto al instante con el pin de color
+      const entity = viewer.entities.add({
         name: prefijo + lugar.nombre,
         position: Cesium.Cartesian3.fromDegrees(lugar.lon, lugar.lat, 100),
         billboard: {
-          image: imagenFinal,
+          image: pinPara(colorHex),
           width: 52, height: 70,
           verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
           heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
@@ -499,6 +500,13 @@
           scaleByDistance: new Cesium.NearFarScalar(500, 1.0, 15000, 0.7)
         }
       });
+
+      // 2) Cuando la foto carga, se reemplaza el pin por el pin con foto
+      if (imagenUrl) {
+        fotoPinPromise(imagenUrl, colorHex).then(dataUrl => {
+          entity.billboard.image = dataUrl;
+        });
+      }
     }
 
     atractivos.forEach(l => agregarPunto(l, colores[l.tipo] || colores.turismo, '📍 '));
@@ -548,7 +556,7 @@
     const panel = document.getElementById('detallePanel');
     const imgUrl = obtenerImagenLugar(lugar.nombre);
     const img = document.getElementById('detalleImg');
-    if (imgUrl) { img.src = imgUrl; img.style.display = 'block'; }
+    if (imgUrl) { img.style.display = 'block'; img.src = imgUrl; }
     else { img.style.display = 'none'; img.src = ''; }
     document.getElementById('detalleNombre').textContent = lugar.nombre;
 
